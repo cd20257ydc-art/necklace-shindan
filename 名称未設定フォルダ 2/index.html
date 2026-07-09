@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ネックレス診断 | 今のあなたの気持ちを具現化しよう</title>
+    <style>
+        /* --- デザインシステム & 変数 --- */
+        :root {
+            --base-cream: #FFFDF3;
+            --main-pink: #FFB7CE;
+            --main-blue: #A2E8DD;
+            --accent-yellow: #FFF275;
+            --text-dark: #4A3E3D;
+            --white: #FFFFFF;
+        }
+
+        /* --- 基本リセット --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: var(--base-cream);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- アプリコンテナ --- */
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: var(--base-cream);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        /* --- ページの基本スタイル --- */
+        .page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* ボタン */
+        .btn {
+            display: block;
+            background-color: var(--main-pink);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #E296AF;
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #E296AF; }
+
+        /* --- 各画面の装飾 --- */
+        #start-page { text-align: center; padding-top: 40px; }
+        .main-title { font-size: 26px; color: var(--text-dark); margin-bottom: 20px; font-weight: bold; line-height: 1.4; }
+        .sub-title { font-size: 14px; color: #8B7A78; margin-bottom: 40px; }
+
+        .progress-bar { width: 100%; height: 10px; background-color: #EAE5D9; border-radius: 5px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--main-blue); width: 0%; transition: width 0.3s ease; }
+        .question-text { font-size: 20px; font-weight: bold; margin-bottom: 24px; text-align: center; }
+        .options-container { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+        
+        .option-btn {
+            background-color: var(--white);
+            border: 3px solid var(--main-blue);
+            border-radius: 24px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--main-blue);
+            text-align: center;
+        }
+        .option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--main-blue); }
+
+        .result-title { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 20px; display: inline-block; }
+        .timeline { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; width: 100%; }
+        
+        .day-card { background-color: var(--white); border-radius: 18px; padding: 16px; display: flex; align-items: center; border: 2px solid #F0EBE0; }
+        .day-badge { width: 45px; height: 45px; border-radius: 50%; background-color: var(--main-blue); color: var(--white); font-weight: bold; font-size: 14px; display: flex; justify-content: center; align-items: center; margin-right: 14px; flex-shrink: 0; }
+        .day-card:nth-child(6) .day-badge, .day-card:nth-child(7) .day-badge { background-color: var(--main-pink); }
+        .day-info { flex-grow: 1; }
+        .necklace-name { font-weight: bold; font-size: 16px; margin-bottom: 4px; color: var(--text-dark); }
+        
+        .coord-tag { display: inline-block; font-size: 11px; background-color: var(--base-cream); padding: 2px 8px; border-radius: 10px; color: #8B7A78; border: 1px solid #E2DCCF; margin-top: 4px; }
+        .necklace-thumb-wrap { width: 65px; height: 65px; border-radius: 12px; overflow: hidden; margin-right: 14px; border: 2px solid #EAE5D9; background-color: #EEE; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .necklace-thumb { width: 100%; height: 100%; object-fit: cover; }
+
+        .lucky-box { width: 100%; background-color: var(--accent-yellow); border: 3px dashed var(--text-dark); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 30px; box-shadow: 4px 4px 0 var(--text-dark); }
+        .lucky-title { font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+        .lucky-img-wrap { width: 150px; height: 150px; border-radius: 16px; overflow: hidden; margin: 0 auto 12px; border: 3px solid var(--white); background-color: #EEE; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+
+    <div id="start-page" class="page" style="display: flex;">
+        <h1 class="main-title">今のあなたの気持ちを<br>具現化してみよう</h1>
+        <p class="sub-title">毎日の気分に寄り添う1週間コーデ診断</p>
+        <button class="btn" onclick="startDiagnosis();">診断をはじめる</button>
+    </div>
+
+    <div id="question-page" class="page" style="display: none;">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <div id="question-text" class="question-text"></div>
+        <div id="options-container" class="options-container"></div>
+    </div>
+
+    <div id="result-page" class="page" style="display: none;">
+        <div style="text-align: center; width:100%;"><h2 class="result-title">💎 あなたの1週間ネックレスプラン</h2></div>
+        <div id="timeline" class="timeline"></div>
+
+        <div class="lucky-box">
+            <div class="lucky-title">✨ 今日のラッキーネックレス ✨</div>
+            <div class="lucky-img-wrap"><img id="lucky-img" class="necklace-thumb" src="" alt="画像" data-index="0" onerror="findValidImage(this)"></div>
+            <div id="lucky-necklace" style="font-weight: bold; font-size: 18px; margin-bottom: 4px;"></div>
+            <div id="lucky-coord" class="coord-tag"></div>
+        </div>
+
+        <button class="btn" onclick="resetDiagnosis();">もう一度診断する</button>
+    </div>
+
+</div>
+
+<script>
+    const questions = [
+        { q: "今の気分は？", options: ["わくわく", "落ち着きたい", "自信をつけたい", "ロマンチック"] },
+        { q: "今日の服装は？", options: ["カジュアル", "フェミニン", "シンプル", "モード"] },
+        { q: "アクセサリーの存在感は？", options: ["さりげなく", "少し目立つ", "主役級"] },
+        { q: "よく身につける色は？", options: ["白系", "黒系", "パステル", "ビビッド"] },
+        { q: "ネックレスをつける目的は？", options: ["おしゃれ", "気分転換", "自信を持ちたい", "推し活"] }
+    ];
+
+    const necklaces = [
+        { name: "ポップスクエア", coord: "キャミワンピ", id: 1 },
+        { name: "レッドコード", coord: "白Tシャツ", id: 2 },
+        { name: "サマーブルー", coord: "シアーシャツ", id: 3 },
+        { name: "マルチパレット", coord: "リネンワンピ", id: 4 },
+        { name: "マリアメダイ", coord: "ジャケット", id: 5 },
+        { name: "ミニハート", coord: "モノトーンワンピ", id: 6 },
+        { name: "ウッドクロス", coord: "ビッグシャツ", id: 7 },
+        { name: "マルチスター", coord: "レザージャケット", id: 8 },
+        { name: "ミニクロック", coord: "フリルブラウス", id: 9 },
+        { name: "クリスタルドレス", coord: "パステルカーデ", id: 10 },
+        { name: "パフハート", coord: "ピンクコーデ", id: 11 },
+        { name: "シルバーオーバル", coord: "Vネックトップス", id: 12 },
+        { name: "ゴールドメダル", coord: "テーラードジレ", id: 13 },
+        { name: "パールチョーカー", coord: "白ブラウス", id: 14 },
+        { name: "オーロラドロップ", coord: "シフォンワンピ", id: 15 },
+        { name: "モードチェーン", coord: "スウェット", id: 16 }
+    ];
+
+    const days = ["月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日", "日曜日"];
+    let currentQuestionIndex = 0;
+
+    const zenNums = ["０","１","２","３","４","５","６","７","８","９","１０","１１","１２","１３","１４","１５","１６"];
+
+    function generateCandidateNames(id) {
+        const candidates = [];
+        const hanStr = String(id);
+        const zenStr = id <= 16 ? zenNums[id] : hanStr;
+
+        if (id === 1) {
+            candidates.push("ネックレス.jpg", "ネックレス.JPG", "ネックレス.jpeg");
+        }
+
+        candidates.push(`ネックレス${hanStr}.jpg`, `ネックレス${hanStr}.JPG`, `ネックレス${hanStr}.jpeg`);
+        candidates.push(`ネックレス${zenStr}.jpg`, `ネックレス${zenStr}.JPG`, `ネックレス${zenStr}.jpeg`);
+        
+        return candidates;
+    }
+
+    function findValidImage(img) {
+        const id = parseInt(img.getAttribute('data-id'), 10);
+        let currentIndex = parseInt(img.getAttribute('data-index'), 10);
+        
+        const candidates = generateCandidateNames(id);
+        currentIndex++;
+        
+        if (currentIndex < candidates.length) {
+            img.setAttribute('data-index', currentIndex);
+            img.src = candidates[currentIndex];
+        } else {
+            img.style.opacity = "0";
+        }
+    }
+
+    function showPage(id) {
+        document.getElementById("start-page").style.display = 'none';
+        document.getElementById("question-page").style.display = 'none';
+        document.getElementById("result-page").style.display = 'none';
+        document.getElementById(id).style.display = 'flex';
+        window.scrollTo(0, 0);
+    }
+
+    function startDiagnosis() {
+        currentQuestionIndex = 0;
+        showPage("question-page");
+        showQuestion();
+    }
+
+    function resetDiagnosis() {
+        showPage("start-page");
+    }
+
+    function showQuestion() {
+        const qData = questions[currentQuestionIndex];
+        document.getElementById('progress-fill').style.width = ((currentQuestionIndex + 1) / questions.length * 100) + "%";
+        document.getElementById('question-text').innerText = `Q${currentQuestionIndex + 1}. ${qData.q}`;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        qData.options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'option-btn';
+            b.innerText = opt;
+            b.onclick = function() {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    showQuestion();
+                } else {
+                    generateResult();
+                }
+            };
+            container.appendChild(b);
+        });
+    }
+
+    function generateResult() {
+        showPage("result-page");
+
+        const shuffled = [...necklaces].sort(() => Math.random() - 0.5);
+        const timeline = document.getElementById('timeline');
+        timeline.innerHTML = '';
+
+        for (let i = 0; i < 7; i++) {
+            const item = shuffled[i];
+            const card = document.createElement('div');
+            card.className = 'day-card';
+            
+            const firstCandidate = generateCandidateNames(item.id)[0];
+
+            card.innerHTML = `
+                <div class="day-badge">${days[i][0]}</div>
+                <div class="necklace-thumb-wrap">
+                    <img class="necklace-thumb" src="${firstCandidate}" data-id="${item.id}" data-index="0" onerror="findValidImage(this)" alt="画像">
+                </div>
+                <div class="day-info">
+                    <div class="necklace-name">${item.name}</div>
+                    <div class="coord-tag">× ${item.coord}</div>
+                </div>
+            `;
+            timeline.appendChild(card);
+        }
+
+        const lucky = shuffled[Math.floor(Math.random() * shuffled.length)];
+        const luckyImg = document.getElementById('lucky-img');
+        
+        const luckyFirstCandidate = generateCandidateNames(lucky.id)[0];
+        luckyImg.setAttribute('data-id', lucky.id);
+        luckyImg.setAttribute('data-index', "0");
+        luckyImg.style.opacity = "1";
+        luckyImg.src = luckyFirstCandidate;
+        
+        document.getElementById('lucky-necklace').innerText = lucky.name;
+        document.getElementById('lucky-coord').innerText = `おすすめ：${lucky.coord}`;
+    }
+</script>
+</body>
+</html>
